@@ -23,3 +23,6 @@ capture/
 
 # CodeChecker
 .codechecker/
+
+**/ros2_ws/**
+**/map_data/**

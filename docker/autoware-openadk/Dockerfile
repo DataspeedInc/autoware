@@ -58,12 +58,12 @@ RUN --mount=type=ssh \
   && find / -name 'libnv*.a' -delete
 
 # Copy repository files
-COPY autoware.repos /autoware/
+COPY autoware.repos.yaml /autoware/
 
 # Install rosdep dependencies
 RUN --mount=type=ssh \
   mkdir src \
-  && vcs import src < autoware.repos \
+  && vcs import src < autoware.repos.yaml \
   && apt-get update \
   && rosdep update \
   && DEBIAN_FRONTEND=noninteractive rosdep install -y --ignore-src --from-paths src --rosdistro "$ROS_DISTRO" \
@@ -102,12 +102,12 @@ ARG LIB_DIR
 ARG SETUP_ARGS
 
 # Set up runtime environment and artifacts
-COPY autoware.repos /autoware/
+COPY autoware.repos.yaml /autoware/
 RUN --mount=type=ssh \
   ./setup-dev-env.sh -y --module all ${SETUP_ARGS} --download-artifacts --no-cuda-drivers --runtime openadk \
   && pip uninstall -y ansible ansible-core \
   && mkdir src \
-  && vcs import src < autoware.repos \
+  && vcs import src < autoware.repos.yaml \
   && rosdep update \
   && DEBIAN_FRONTEND=noninteractive rosdep install -y --dependency-types=exec --ignore-src --from-paths src --rosdistro "$ROS_DISTRO" \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* "$HOME"/.cache \
@@ -115,7 +115,7 @@ RUN --mount=type=ssh \
   && find / -name "*.o" -type f -delete \
   && find / -name "*.h" -type f -delete \
   && find / -name "*.hpp" -type f -delete \
-  && rm -rf /autoware/src /autoware/ansible /autoware/autoware.repos \
+  && rm -rf /autoware/src /autoware/ansible /autoware/autoware.repos.yaml \
     /root/.local/pipx /opt/ros/"$ROS_DISTRO"/include /etc/apt/sources.list.d/cuda*.list \
     /etc/apt/sources.list.d/docker.list /etc/apt/sources.list.d/nvidia-docker.list \
     /usr/include /usr/share/doc /usr/lib/gcc /usr/lib/jvm /usr/lib/llvm*
